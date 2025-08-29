@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "uplot/dist/uPlot.min.css";
 
 :root {
   --background: #ffffff;
@@ -23,4 +24,78 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+/* React Grid Layout Styles */
+.react-grid-layout {
+  position: relative;
+}
+
+.react-grid-item {
+  transition: all 200ms ease;
+  transition-property: left, top, width, height;
+}
+
+.react-grid-item.cssTransforms {
+  transition-property: transform, width, height;
+}
+
+.react-grid-item > .react-resizable-handle {
+  position: absolute;
+  width: 15px;
+  height: 15px;
+  bottom: 0;
+  right: 0;
+  cursor: se-resize;
+  background: url("data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTUiIGhlaWdodD0iMTUiIHZpZXdCb3g9IjAgMCAxNSAxNSIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTE0IDEwVjE0SDEwTDEzIDEzTDE0IDEwWk0xNCAxNEgxMFY5SDEzSDEzTDE0IDEwVjE0WiIgZmlsbD0iIzZCNzI4MCIvPgo8L3N2Zz4K")
+    no-repeat center;
+  background-size: 100% 100%;
+  opacity: 0.4;
+  transition: opacity 0.2s;
+}
+
+.react-grid-item:hover > .react-resizable-handle {
+  opacity: 0.8;
+}
+
+.react-grid-item.react-grid-placeholder {
+  background: rgba(59, 130, 246, 0.15);
+  border: 2px dashed rgba(59, 130, 246, 0.4);
+  opacity: 0.2;
+  border-radius: 8px;
+  transition-duration: 100ms;
+  z-index: 2;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  -o-user-select: none;
+  user-select: none;
+}
+
+/* uPlot Dark Theme Overrides */
+.uplot {
+  font-family: inherit;
+}
+
+.uplot .u-title {
+  color: #ffffff;
+  font-weight: 600;
+  text-align: center;
+}
+
+.uplot .u-legend {
+  color: #ffffff;
+}
+
+.uplot .u-cursor-pt {
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 50%;
+}
+
+.uplot .u-tooltip {
+  background: rgba(17, 24, 39, 0.95);
+  color: #ffffff;
+  border: 1px solid #374151;
+  border-radius: 6px;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
 }

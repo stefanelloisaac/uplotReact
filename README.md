@@ -1,36 +1,51 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# uPlot React Dashboard
+
+A real-time dashboard built with Next.js, React, and uPlot featuring responsive charts with live data streaming.
+
+## Features
+
+- **Real-time Data**: Charts update every second with new data points
+- **Responsive Design**: Drag and resize charts within a grid layout
+- **Multiple Chart Types**: Line, Area (smooth curves), Scatter (with trend line), and Multi-Bar charts
+- **Professional Styling**: Card-based layout with gray grid styling
+- **Optimized Performance**: Uses uPlot's efficient setData() for smooth real-time updates
+
+## Charts
+
+- **Line Chart**: Basic time series visualization
+- **Area Chart**: Smooth spline curves with filled area
+- **Scatter Plot**: Points with linear regression trend line
+- **Bar Chart**: Grouped bars with 4 series per group
+
+## Tech Stack
+
+- Next.js 15 with App Router
+- React 19
+- TypeScript
+- uPlot for high-performance charting
+- Tailwind CSS for styling
+- React Grid Layout for drag/resize functionality
 
 ## Getting Started
 
-First, run the development server:
-
 ```bash
+# Install dependencies
+npm install
+
+# Run development server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+
+# Build for production
+npm run build
+npm start
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) to view the dashboard.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Deployment
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+The project is configured for easy deployment to Vercel, Netlify, or any static hosting provider.
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+npm run build
+```
