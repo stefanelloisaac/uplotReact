@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useMemo } from "react";
 import uPlot from "uplot";
 import "uplot/dist/uPlot.min.css";
-import UPlotChart from "./UplotChart";
+import StyledChart from "../lib/uPlot/styled/StyledChart";
+import { BaseChartProps } from "../lib/uPlot/types";
 
 const multiBarsBuilder: uPlot.Series.PathBuilder = (
   u,
@@ -41,11 +42,13 @@ const multiBarsBuilder: uPlot.Series.PathBuilder = (
   return { stroke, fill };
 };
 
-interface BarChartProps {
-  data?: uPlot.AlignedData;
-}
+interface BarChartProps extends BaseChartProps {}
 
-const BarChart: React.FC<BarChartProps> = ({ data: propData }) => {
+const BarChart: React.FC<BarChartProps> = ({
+  data: propData,
+  theme,
+  responsive,
+}) => {
   const data: uPlot.AlignedData = propData || [
     [0, 1, 2, 3, 4],
     [3, 7, 4, 6, 9],
@@ -54,36 +57,48 @@ const BarChart: React.FC<BarChartProps> = ({ data: propData }) => {
     [6, 4, 7, 5, 6],
   ];
 
-  const options: uPlot.Options = {
-    width: 600,
-    height: 300,
-    series: [
-      {},
-      {
-        label: "Série A",
-        fill: "rgba(0, 128, 255, 0.6)",
-        paths: multiBarsBuilder,
-      },
-      {
-        label: "Série B",
-        fill: "rgba(255, 128, 0, 0.6)",
-        paths: multiBarsBuilder,
-      },
-      {
-        label: "Série C",
-        fill: "rgba(0, 255, 128, 0.6)",
-        paths: multiBarsBuilder,
-      },
-      {
-        label: "Série D",
-        fill: "rgba(255, 0, 128, 0.6)",
-        paths: multiBarsBuilder,
-      },
-    ],
-    axes: [{}, { label: "Valor" }],
-  };
+  const options: uPlot.Options = useMemo(
+    () => ({
+      width: 600,
+      height: 300,
+      series: [
+        {},
+        {
+          label: "Série A",
+          fill: "rgba(0, 128, 255, 0.6)",
+          paths: multiBarsBuilder,
+        },
+        {
+          label: "Série B",
+          fill: "rgba(255, 128, 0, 0.6)",
+          paths: multiBarsBuilder,
+        },
+        {
+          label: "Série C",
+          fill: "rgba(0, 255, 128, 0.6)",
+          paths: multiBarsBuilder,
+        },
+        {
+          label: "Série D",
+          fill: "rgba(255, 0, 128, 0.6)",
+          paths: multiBarsBuilder,
+        },
+      ],
+      axes: [{}, { label: "Valor" }],
+    }),
+    []
+  );
 
-  return <UPlotChart data={data} options={options} />;
+  const chartData: uPlot.AlignedData = useMemo(() => data, [data]);
+
+  return (
+    <StyledChart
+      data={chartData}
+      options={options}
+      theme={theme}
+      responsive={responsive}
+    />
+  );
 };
 
 export default BarChart;

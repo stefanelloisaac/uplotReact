@@ -72,6 +72,23 @@ body {
   user-select: none;
 }
 
+/* Button interaction fixes for React Grid Layout */
+.react-grid-no-touch {
+  pointer-events: auto !important;
+  z-index: 10;
+  position: relative;
+}
+
+.react-grid-item .react-grid-no-touch {
+  /* Ensure buttons work even when in grid items */
+  cursor: pointer !important;
+}
+
+.react-grid-item .react-grid-no-touch:hover {
+  /* Prevent grid drag cursor on button hover */
+  cursor: pointer !important;
+}
+
 /* uPlot Dark Theme Overrides */
 .uplot {
   font-family: inherit;
