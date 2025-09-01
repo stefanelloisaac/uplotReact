@@ -74,10 +74,10 @@
   --chart-5: oklch(0.769 0.188 70.08);
 
   /* Chart theme variables for light theme */
-  --chart-grid: red;
-  --chart-axis: red;
-  --chart-tick: red;
-  --chart-background: var(--background);
+  --chart-grid: oklch(0.9 0 0);
+  --chart-axis: oklch(0.6 0 0);
+  --chart-tick: oklch(0.6 0 0);
+  --chart-background: inherit;
 
   --sidebar: oklch(0.985 0 0);
   --sidebar-foreground: oklch(0.145 0 0);
@@ -115,10 +115,10 @@
   --chart-5: oklch(0.645 0.246 16.439);
 
   /* Chart theme variables for dark theme */
-  --chart-grid: blue;
-  --chart-axis: blue;
-  --chart-tick: blue;
-  --chart-background: var(--background);
+  --chart-grid: oklch(1 0 0 / 10%);
+  --chart-axis: oklch(0.6 0 0);
+  --chart-tick: oklch(0.4 0 0);
+  --chart-background: inherit;
 
   --sidebar: oklch(0.205 0 0);
   --sidebar-foreground: oklch(0.985 0 0);
@@ -137,6 +137,6 @@
   body {
     @apply bg-background text-foreground;
   }
-  
+
   /* Remove the CSS overrides - let uPlot use the values directly */
 }

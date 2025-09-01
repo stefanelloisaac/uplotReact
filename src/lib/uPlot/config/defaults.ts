@@ -1,22 +1,15 @@
-import { ResponsiveConfig, ChartConfig } from "../types";
-import { defaultTheme } from "./themes";
+import { ResponsiveConfig } from "../types";
 
 export const defaultResponsive: ResponsiveConfig = {
   minWidth: 200,
   minHeight: 150,
   aspectRatio: 2,
-  legendSpace: 30,
+  legendSpace: 60, // More generous space for legend
 };
 
 export const defaultDimensions = {
   width: 600,
   height: 300,
-};
-
-export const defaultChartConfig: ChartConfig = {
-  theme: defaultTheme,
-  responsive: defaultResponsive,
-  defaults: defaultDimensions,
 };
 
 export const chartTypeDefaults = {

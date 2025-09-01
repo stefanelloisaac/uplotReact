@@ -25,6 +25,7 @@ export interface ResponsiveConfig {
 export interface UplotReactProps {
   options: uPlot.Options;
   data: uPlot.AlignedData;
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
   target?: HTMLElement | ((self: uPlot, init: Function) => void);
   onDelete?: (chart: uPlot) => void;
   onCreate?: (chart: uPlot) => void;

@@ -1,4 +1,4 @@
-import React, { JSX, useEffect, useRef, useState } from "react";
+import React, { JSX, useCallback, useEffect, useRef, useState } from "react";
 import uPlot from "uplot";
 import { UplotReactProps } from "../types";
 import { dataMatch, optionsUpdateState } from "../utils";
@@ -15,15 +15,15 @@ export default function UplotReact({
   const [error, setError] = useState<Error | null>(null);
   const mountedRef = useRef(true);
 
-  function destroy(chart: uPlot | null) {
+  const destroy = useCallback((chart: uPlot | null) => {
     if (chart) {
       onDelete(chart);
       chart.destroy();
       chartRef.current = null;
     }
-  }
+  }, [onDelete]);
 
-  function create() {
+  const create = useCallback(() => {
     if (!mountedRef.current) return;
 
     try {
@@ -45,7 +45,7 @@ export default function UplotReact({
       console.error("Failed to create uPlot chart:", error);
       setError(error);
     }
-  }
+  }, [options, data, target, onCreate]);
 
   useEffect(() => {
     mountedRef.current = true;
@@ -54,7 +54,8 @@ export default function UplotReact({
       mountedRef.current = false;
       destroy(chartRef.current);
     };
-  }, []);
+  }, [create, destroy]);
+  
   const prevProps = useRef({ options, data, target }).current;
   useEffect(() => {
     const chart = chartRef.current;
@@ -82,12 +83,11 @@ export default function UplotReact({
       create();
     }
 
-    return () => {
-      prevProps.options = options;
-      prevProps.data = data;
-      prevProps.target = target;
-    };
-  }, [options, data, target]);
+    prevProps.options = options;
+    prevProps.data = data;
+    prevProps.target = target;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [options, data, target, create, destroy]);
 
   if (error) {
     return (
@@ -100,5 +100,5 @@ export default function UplotReact({
     );
   }
 
-  return target ? null : <div ref={targetRef}></div>;
+  return target ? null : <div ref={targetRef} className="w-full h-full"></div>;
 }

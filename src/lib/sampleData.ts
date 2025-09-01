@@ -2,11 +2,22 @@ import type { ChartSeries } from "@/components/ui/Chart";
 import uPlot from "uplot";
 
 // Generate sample time series data
-export const generateTimeSeriesData = (points: number = 50): uPlot.AlignedData => {
+export const generateTimeSeriesData = (
+  points: number = 50
+): uPlot.AlignedData => {
   const timestamps = Array.from({ length: points }, (_, i) => i);
-  const series1 = Array.from({ length: points }, (_, i) => Math.sin(i * 0.2) * 50 + Math.random() * 20 + 100);
-  const series2 = Array.from({ length: points }, (_, i) => Math.cos(i * 0.15) * 40 + Math.random() * 15 + 80);
-  const series3 = Array.from({ length: points }, (_, i) => Math.sin(i * 0.3) * 30 + Math.random() * 25 + 60);
+  const series1 = Array.from(
+    { length: points },
+    (_, i) => Math.sin(i * 0.2) * 50 + Math.random() * 20 + 100
+  );
+  const series2 = Array.from(
+    { length: points },
+    (_, i) => Math.cos(i * 0.15) * 40 + Math.random() * 15 + 80
+  );
+  const series3 = Array.from(
+    { length: points },
+    (_, i) => Math.sin(i * 0.3) * 30 + Math.random() * 25 + 60
+  );
 
   return [timestamps, series1, series2, series3];
 };
@@ -25,8 +36,8 @@ export const generateBarData = (): uPlot.AlignedData => {
 export const generateScatterData = (): uPlot.AlignedData => {
   const points = 30;
   const x = Array.from({ length: points }, () => Math.random() * 100);
-  const y1 = x.map(val => val * 0.8 + Math.random() * 20);
-  const y2 = x.map(val => val * -0.5 + 80 + Math.random() * 15);
+  const y1 = x.map((val) => val * 0.8 + Math.random() * 20);
+  const y2 = x.map((val) => val * -0.5 + 80 + Math.random() * 15);
 
   return [x, y1, y2];
 };
@@ -35,8 +46,12 @@ export const generateScatterData = (): uPlot.AlignedData => {
 export const generateAreaData = (): uPlot.AlignedData => {
   const points = 40;
   const timestamps = Array.from({ length: points }, (_, i) => i);
-  const series1 = Array.from({ length: points }, (_, i) => Math.max(0, Math.sin(i * 0.3) * 30 + 50 + Math.random() * 10));
-  const series2 = Array.from({ length: points }, (_, i) => Math.max(0, Math.cos(i * 0.2) * 25 + 40 + Math.random() * 8));
+  const series1 = Array.from({ length: points }, (_, i) =>
+    Math.max(0, Math.sin(i * 0.3) * 30 + 50 + Math.random() * 10)
+  );
+  const series2 = Array.from({ length: points }, (_, i) =>
+    Math.max(0, Math.cos(i * 0.2) * 25 + 40 + Math.random() * 8)
+  );
 
   return [timestamps, series1, series2];
 };
@@ -45,21 +60,21 @@ export const generateAreaData = (): uPlot.AlignedData => {
 export const sampleLineSeries: ChartSeries[] = [
   { label: "Revenue" },
   { label: "Profit" },
-  { label: "Expenses" }
+  { label: "Expenses" },
 ];
 
 export const sampleBarSeries: ChartSeries[] = [
   { label: "Q1 Sales" },
   { label: "Q2 Sales" },
-  { label: "Q3 Sales" }
+  { label: "Q3 Sales" },
 ];
 
 export const sampleScatterSeries: ChartSeries[] = [
   { label: "Dataset A", pointSize: 6 },
-  { label: "Dataset B", pointSize: 8 }
+  { label: "Dataset B", pointSize: 8 },
 ];
 
 export const sampleAreaSeries: ChartSeries[] = [
   { label: "Page Views", smooth: true },
-  { label: "Unique Visitors", smooth: true }
+  { label: "Unique Visitors", smooth: true },
 ];

@@ -63,7 +63,7 @@ class DataCache<T> {
 
     if (this.cache.size >= this.maxSize) {
       const sortedEntries = entries
-        .filter(([_, entry]) => now - entry.timestamp <= this.maxAge)
+        .filter(([, entry]) => now - entry.timestamp <= this.maxAge)
         .sort((a, b) => a[1].accessCount - b[1].accessCount);
 
       const toRemove = sortedEntries.slice(0, Math.floor(this.maxSize * 0.2));

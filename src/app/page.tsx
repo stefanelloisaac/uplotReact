@@ -1,21 +1,37 @@
 "use client";
 
 import React, { useState } from "react";
-import { Chart, PREDEFINED_THEMES, type ThemeName } from "@/components/ui/Chart";
-import { ThemeToggle } from "@/components/ui/ThemeToggle";
+import RGL, { WidthProvider, Layout } from "react-grid-layout";
+import {
+  Chart,
+  PREDEFINED_THEMES,
+  type ThemeName,
+} from "@/components/ui/Chart";
+import { ModeToggle } from "@/components/ui/ThemeToggle";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
-import { 
-  generateTimeSeriesData, 
-  generateBarData, 
-  generateScatterData, 
+import {
+  generateTimeSeriesData,
+  generateBarData,
+  generateScatterData,
   generateAreaData,
   sampleLineSeries,
   sampleBarSeries,
   sampleScatterSeries,
-  sampleAreaSeries
+  sampleAreaSeries,
 } from "@/lib/sampleData";
+
+import "react-grid-layout/css/styles.css";
+import "react-resizable/css/styles.css";
+
+const ReactGridLayout = WidthProvider(RGL);
 
 export default function Dashboard() {
   const [chartTheme, setChartTheme] = useState<ThemeName>("Default");
@@ -28,6 +44,112 @@ export default function Dashboard() {
 
   const themeOptions = Object.keys(PREDEFINED_THEMES) as ThemeName[];
 
+  // Grid layout configuration
+  const [layout, setLayout] = useState<Layout[]>([
+    { i: "line-chart", x: 0, y: 0, w: 6, h: 7, minW: 4, minH: 6 },
+    { i: "area-chart", x: 6, y: 0, w: 6, h: 7, minW: 4, minH: 6 },
+    { i: "bar-chart", x: 0, y: 7, w: 6, h: 7, minW: 4, minH: 6 },
+    { i: "scatter-chart", x: 6, y: 7, w: 6, h: 7, minW: 4, minH: 6 },
+    { i: "theme-preview", x: 0, y: 14, w: 12, h: 5, minW: 6, minH: 4 },
+  ]);
+
+  const onLayoutChange = (newLayout: Layout[]) => {
+    setLayout(newLayout);
+  };
+
+  // Chart data and configurations
+  const chartItems = [
+    {
+      key: "line-chart",
+      title: "Revenue Trends",
+      description: "Monthly revenue, profit, and expenses over time",
+      chart: (
+        <Chart
+          type="line"
+          data={lineData}
+          series={sampleLineSeries}
+          chartTheme={chartTheme}
+          title=""
+          responsive={true}
+          enableAccessibility={true}
+          enableLazyLoading={false}
+          debug={false}
+        />
+      ),
+    },
+    {
+      key: "area-chart",
+      title: "Website Analytics",
+      description: "Page views and unique visitors over time",
+      chart: (
+        <Chart
+          type="area"
+          data={areaData}
+          series={sampleAreaSeries}
+          chartTheme={chartTheme}
+          title=""
+          responsive={true}
+          enableAccessibility={true}
+          enableLazyLoading={false}
+        />
+      ),
+    },
+    {
+      key: "bar-chart",
+      title: "Quarterly Sales",
+      description: "Sales performance across different quarters",
+      chart: (
+        <Chart
+          type="bar"
+          data={barData}
+          series={sampleBarSeries}
+          chartTheme={chartTheme}
+          title=""
+          responsive={true}
+          enableAccessibility={true}
+          enableLazyLoading={false}
+        />
+      ),
+    },
+    {
+      key: "scatter-chart",
+      title: "Data Correlation",
+      description: "Scatter plot showing relationship between datasets",
+      chart: (
+        <Chart
+          type="scatter"
+          data={scatterData}
+          series={sampleScatterSeries}
+          chartTheme={chartTheme}
+          title=""
+          responsive={true}
+          enableAccessibility={true}
+          enableLazyLoading={false}
+        />
+      ),
+    },
+    {
+      key: "theme-preview",
+      title: `Current Theme: ${chartTheme}`,
+      description: "Color palette preview for the selected theme",
+      chart: (
+        <div className="flex flex-wrap gap-2">
+          {PREDEFINED_THEMES[chartTheme].map((color, index) => (
+            <div key={index} className="flex flex-col items-center gap-2">
+              <div
+                className="w-12 h-12 rounded-lg border border-border shadow-sm"
+                style={{ backgroundColor: color }}
+              />
+              <span className="text-xs text-muted-foreground font-mono">
+                Color {index + 1}
+              </span>
+            </div>
+          ))}
+        </div>
+      ),
+    },
+  ];
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -35,18 +157,23 @@ export default function Dashboard() {
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-bold text-foreground">Chart Dashboard</h1>
+              <h1 className="text-2xl font-bold text-foreground">
+                Chart Dashboard
+              </h1>
               <p className="text-muted-foreground">
                 Interactive charts with uPlot React integration
               </p>
             </div>
-            
+
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-2">
                 <label htmlFor="theme-select" className="text-sm font-medium">
                   Chart Theme:
                 </label>
-                <Select value={chartTheme} onValueChange={(value: ThemeName) => setChartTheme(value)}>
+                <Select
+                  value={chartTheme}
+                  onValueChange={(value: ThemeName) => setChartTheme(value)}
+                >
                   <SelectTrigger className="w-40" id="theme-select">
                     <SelectValue placeholder="Select theme" />
                   </SelectTrigger>
@@ -59,176 +186,63 @@ export default function Dashboard() {
                   </SelectContent>
                 </Select>
               </div>
-              
+
               <Separator orientation="vertical" className="h-6" />
-              
-              <ThemeToggle />
+              <ModeToggle />
             </div>
           </div>
         </div>
       </header>
 
-      {/* Dashboard Content */}
-      <main className="container mx-auto px-4 py-8">
-        <div className="grid gap-8">
-          
-          {/* First Row - Line and Area Charts */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Revenue Trends</CardTitle>
-                <p className="text-sm text-muted-foreground">
-                  Monthly revenue, profit, and expenses over time
-                </p>
-              </CardHeader>
-              <CardContent>
-                <Chart
-                  type="line"
-                  data={lineData}
-                  series={sampleLineSeries}
-                  theme={chartTheme}
-                  title=""
-                  width={600}
-                  height={300}
-                  responsive={true}
-                  enableAccessibility={true}
-                  enableLazyLoading={false}
-                  debug={false}
-                />
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Website Analytics</CardTitle>
-                <p className="text-sm text-muted-foreground">
-                  Page views and unique visitors over time
-                </p>
-              </CardHeader>
-              <CardContent>
-                <Chart
-                  type="area"
-                  data={areaData}
-                  series={sampleAreaSeries}
-                  theme={chartTheme}
-                  title=""
-                  width={600}
-                  height={300}
-                  responsive={true}
-                  enableAccessibility={true}
-                  enableLazyLoading={false}
-                />
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Second Row - Bar and Scatter Charts */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Quarterly Sales</CardTitle>
-                <p className="text-sm text-muted-foreground">
-                  Sales performance across different quarters
-                </p>
-              </CardHeader>
-              <CardContent>
-                <Chart
-                  type="bar"
-                  data={barData}
-                  series={sampleBarSeries}
-                  theme={chartTheme}
-                  title=""
-                  width={600}
-                  height={300}
-                  responsive={true}
-                  enableAccessibility={true}
-                  enableLazyLoading={false}
-                />
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Data Correlation</CardTitle>
-                <p className="text-sm text-muted-foreground">
-                  Scatter plot showing relationship between datasets
-                </p>
-              </CardHeader>
-              <CardContent>
-                <Chart
-                  type="scatter"
-                  data={scatterData}
-                  series={sampleScatterSeries}
-                  theme={chartTheme}
-                  title=""
-                  width={600}
-                  height={300}
-                  responsive={true}
-                  enableAccessibility={true}
-                  enableLazyLoading={false}
-                />
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Third Row - Lazy Loading Demo */}
-          <div className="grid grid-cols-1 gap-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Lazy Loading Demo</CardTitle>
-                <p className="text-sm text-muted-foreground">
-                  This chart demonstrates lazy loading - hover to load the chart
-                </p>
-              </CardHeader>
-              <CardContent>
-                <Chart
-                  type="line"
-                  data={lineData}
-                  series={sampleLineSeries}
-                  theme={chartTheme}
-                  title=""
-                  width={800}
-                  height={400}
-                  responsive={true}
-                  enableLazyLoading={true}
-                  loadOnHover={true}
-                  loadOnVisible={false}
-                  preloadDelay={500}
-                />
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Theme Preview */}
-          <div className="grid grid-cols-1 gap-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Current Theme: {chartTheme}</CardTitle>
-                <p className="text-sm text-muted-foreground">
-                  Color palette preview for the selected theme
-                </p>
-              </CardHeader>
-              <CardContent>
-                <div className="flex flex-wrap gap-2">
-                  {PREDEFINED_THEMES[chartTheme].map((color, index) => (
-                    <div
-                      key={index}
-                      className="flex flex-col items-center gap-2"
-                    >
-                      <div
-                        className="w-12 h-12 rounded-lg border border-border shadow-sm"
-                        style={{ backgroundColor: color }}
-                      />
-                      <span className="text-xs text-muted-foreground font-mono">
-                        Color {index + 1}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+      {/* Main Content */}
+      <main className="container mx-auto px-4 py-6">
+        <div className="mb-6">
+          <p className="text-muted-foreground">
+            Drag and resize the chart cards below. The layout is automatically
+            saved.
+          </p>
         </div>
+
+        {/* Grid Layout */}
+        <ReactGridLayout
+          className="layout"
+          layout={layout}
+          onLayoutChange={onLayoutChange}
+          cols={12}
+          rowHeight={60}
+          margin={[16, 16]}
+          containerPadding={[0, 0]}
+          isDraggable={true}
+          isResizable={true}
+          compactType="vertical"
+          preventCollision={false}
+          resizeHandles={['se', 'sw', 'ne', 'nw']}
+          style={{
+            minHeight: "1200px",
+          }}
+        >
+          {chartItems.map((item) => (
+            <div
+              key={item.key}
+              className="bg-card border rounded-lg shadow-sm overflow-hidden flex flex-col"
+              style={{ height: "100%" }}
+            >
+              <Card className="h-full border-0 shadow-none flex flex-col">
+                <CardHeader className="pb-2 flex-shrink-0">
+                  <CardTitle className="text-lg">{item.title}</CardTitle>
+                  <p className="text-sm text-muted-foreground">
+                    {item.description}
+                  </p>
+                </CardHeader>
+                <CardContent className="flex-1 p-2 min-h-0">
+                  <div className="h-full w-full">
+                    {item.chart}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          ))}
+        </ReactGridLayout>
       </main>
 
       {/* Footer */}
@@ -241,11 +255,99 @@ export default function Dashboard() {
               <span className="font-semibold">React</span>
             </p>
             <p className="mt-1">
-              Features: Lazy loading, responsive design, accessibility, theming, and performance optimization
+              Features: Draggable layout, lazy loading, responsive design,
+              accessibility, theming, and performance optimization
             </p>
           </div>
         </div>
       </footer>
+
+      <style jsx global>{`
+        .react-grid-item.cssTransforms {
+          transition-property: transform;
+          transition-duration: 200ms;
+          transition-timing-function: ease;
+        }
+
+        .react-grid-item.resizing {
+          opacity: 0.6;
+          z-index: 3;
+        }
+
+        /* Southeast resize handle (bottom-right) */
+        .react-grid-item > .react-resizable-handle.react-resizable-handle-se {
+          position: absolute;
+          width: 20px;
+          height: 20px;
+          bottom: 0;
+          right: 0;
+          background: url("data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNiIgaGVpZ2h0PSI2IiB2aWV3Qm94PSIwIDAgNiA2IiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8ZG90cyBmaWxsPSIjODg4IiBkPSJNIDYsNiBMIDQsNiBMIDQsNCBMIDYsNCBMIDYsNiBaIE0gNiwyIEwgNCwyIEwgNCwwIEwgNiwwIEwgNiwyIFoiLz4KPHN2Zz4K") no-repeat;
+          background-origin: content-box;
+          box-sizing: border-box;
+          cursor: se-resize;
+          opacity: 0.6;
+        }
+
+        /* Southwest resize handle (bottom-left) */
+        .react-grid-item > .react-resizable-handle.react-resizable-handle-sw {
+          position: absolute;
+          width: 20px;
+          height: 20px;
+          bottom: 0;
+          left: 0;
+          background: url("data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNiIgaGVpZ2h0PSI2IiB2aWV3Qm94PSIwIDAgNiA2IiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8ZG90cyBmaWxsPSIjODg4IiBkPSJNIDAsNiBMIDIsNiBMIDIsNCBMIDAsNCBMIDAsNiBaIE0gMCwyIEwgMiwyIEwgMiwwIEwgMCwwIEwgMCwyIFoiLz4KPHN2Zz4K") no-repeat;
+          background-origin: content-box;
+          box-sizing: border-box;
+          cursor: sw-resize;
+          opacity: 0.6;
+        }
+
+        /* Northeast resize handle (top-right) */
+        .react-grid-item > .react-resizable-handle.react-resizable-handle-ne {
+          position: absolute;
+          width: 20px;
+          height: 20px;
+          top: 0;
+          right: 0;
+          background: url("data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNiIgaGVpZ2h0PSI2IiB2aWV3Qm94PSIwIDAgNiA2IiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8ZG90cyBmaWxsPSIjODg4IiBkPSJNIDYsMCBMIDQsMCBMIDQsMiBMIDYsMiBMIDYsMCBaIE0gNiw0IEwgNCw0IEwgNCw2IEwgNiw2IEwgNiw0IFoiLz4KPHN2Zz4K") no-repeat;
+          background-origin: content-box;
+          box-sizing: border-box;
+          cursor: ne-resize;
+          opacity: 0.6;
+        }
+
+        /* Northwest resize handle (top-left) */
+        .react-grid-item > .react-resizable-handle.react-resizable-handle-nw {
+          position: absolute;
+          width: 20px;
+          height: 20px;
+          top: 0;
+          left: 0;
+          background: url("data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNiIgaGVpZ2h0PSI2IiB2aWV3Qm94PSIwIDAgNiA2IiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8ZG90cyBmaWxsPSIjODg4IiBkPSJNIDAsMCBMIDIsMCBMIDIsMiBMIDAsMiBMIDAsMCBaIE0gMCw0IEwgMiw0IEwgMiw2IEwgMCw2IEwgMCw0IFoiLz4KPHN2Zz4K") no-repeat;
+          background-origin: content-box;
+          box-sizing: border-box;
+          cursor: nw-resize;
+          opacity: 0.6;
+        }
+
+        /* Hover effects for better visibility */
+        .react-grid-item:hover > .react-resizable-handle {
+          opacity: 0.9;
+        }
+
+        .react-grid-placeholder {
+          background: rgb(255, 0, 0);
+          opacity: 0.2;
+          transition-duration: 100ms;
+          z-index: 2;
+          border-radius: 8px;
+          border: 2px dashed #888;
+        }
+
+        .layout {
+          position: relative;
+        }
+      `}</style>
     </div>
   );
 }

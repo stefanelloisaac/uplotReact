@@ -97,10 +97,9 @@ export class ChartAccessibility {
       }
     });
 
-    // Only add style if it doesn't already exist
-    if (!document.getElementById('uplot-accessibility-styles')) {
+    if (!document.getElementById("uplot-accessibility-styles")) {
       this.styleElement = document.createElement("style");
-      this.styleElement.id = 'uplot-accessibility-styles';
+      this.styleElement.id = "uplot-accessibility-styles";
       this.styleElement.textContent = `
         .uplot:focus {
           outline: 2px solid #3b82f6;
@@ -193,8 +192,7 @@ export class ChartAccessibility {
       this.ariaLiveRegion.parentNode.removeChild(this.ariaLiveRegion);
       this.ariaLiveRegion = undefined;
     }
-    
-    // Only remove style element if we created it and it's the only one
+
     if (this.styleElement && this.styleElement.parentNode) {
       this.styleElement.parentNode.removeChild(this.styleElement);
       this.styleElement = undefined;

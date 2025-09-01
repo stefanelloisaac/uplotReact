@@ -11,7 +11,7 @@ export const createLineChartConfig = (
 ): Partial<uPlot.Options> => {
   return {
     series: [
-      {}, // X-axis series
+      {},
       ...series.map((s, idx) => ({
         label: s.label,
         stroke: s.stroke || `hsl(${idx * 60}, 70%, 50%)`,
