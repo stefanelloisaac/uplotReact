@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import RGL, { WidthProvider, Layout } from "react-grid-layout";
 import {
   Chart,
@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/Chart";
 import { ModeToggle } from "@/components/ui/ThemeToggle";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import {
   Select,
   SelectContent,
@@ -27,6 +28,7 @@ import {
   sampleScatterSeries,
   sampleAreaSeries,
 } from "@/lib/sampleData";
+import type uPlot from "uplot";
 
 import "react-grid-layout/css/styles.css";
 import "react-resizable/css/styles.css";
@@ -36,11 +38,167 @@ const ReactGridLayout = WidthProvider(RGL);
 export default function Dashboard() {
   const [chartTheme, setChartTheme] = useState<ThemeName>("Default");
 
-  // Generate sample data
-  const lineData = generateTimeSeriesData();
-  const barData = generateBarData();
-  const scatterData = generateScatterData();
-  const areaData = generateAreaData();
+  // Real-time data state
+  const [lineData, setLineData] = useState<uPlot.AlignedData>(() =>
+    generateTimeSeriesData()
+  );
+  const [barData, setBarData] = useState<uPlot.AlignedData>(() =>
+    generateBarData()
+  );
+  const [scatterData, setScatterData] = useState<uPlot.AlignedData>(() =>
+    generateScatterData()
+  );
+  const [areaData, setAreaData] = useState<uPlot.AlignedData>(() =>
+    generateAreaData()
+  );
+
+  // Real-time updates state
+  const [isRealTimeEnabled, setIsRealTimeEnabled] = useState(true);
+
+  // Keep track of time for data generation
+  const timeRef = useRef(0);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Maximum number of data points to keep (sliding window)
+  const MAX_POINTS = 100;
+
+  // Function to generate new data points for each chart type
+  const generateNewDataPoint = (
+    currentData: uPlot.AlignedData,
+    chartType: "line" | "area" | "bar" | "scatter"
+  ): uPlot.AlignedData => {
+    const newData = [...currentData] as uPlot.AlignedData;
+
+    switch (chartType) {
+      case "line":
+      case "area": {
+        // Add new timestamp
+        const lastTime = newData[0][newData[0].length - 1] as number;
+        const newTime = lastTime + 1;
+
+        // Add new data points for each series
+        for (let i = 1; i < newData.length; i++) {
+          const series = [...(newData[i] as number[])];
+          let newValue: number;
+
+          if (chartType === "line") {
+            // Generate realistic time series data
+            newValue =
+              Math.sin(newTime * 0.2 + i) * 50 +
+              Math.random() * 20 +
+              100 -
+              i * 10;
+          } else {
+            // Area chart - always positive values
+            newValue = Math.max(
+              0,
+              Math.sin(newTime * 0.3 + i) * 30 + 50 + Math.random() * 10 - i * 5
+            );
+          }
+
+          series.push(newValue);
+
+          // Keep sliding window
+          if (series.length > MAX_POINTS) {
+            series.shift();
+          }
+
+          newData[i] = series;
+        }
+
+        // Update timestamps
+        const timestamps = [...(newData[0] as number[])];
+        timestamps.push(newTime);
+        if (timestamps.length > MAX_POINTS) {
+          timestamps.shift();
+        }
+        newData[0] = timestamps;
+
+        break;
+      }
+
+      case "bar": {
+        // For bar charts, just update the values randomly
+        for (let i = 1; i < newData.length; i++) {
+          const series = [...(newData[i] as number[])];
+          for (let j = 0; j < series.length; j++) {
+            // Add some randomness to existing values
+            series[j] = Math.max(0, series[j] + (Math.random() - 0.5) * 20);
+          }
+          newData[i] = series;
+        }
+        break;
+      }
+
+      case "scatter": {
+        // Add a new point and remove oldest if needed
+        const x = [...(newData[0] as number[])];
+
+        // Generate new x value
+        const newX = Math.random() * 100;
+        x.push(newX);
+
+        // Generate corresponding y values
+        for (let i = 1; i < newData.length; i++) {
+          const y = [...(newData[i] as number[])];
+          const newY =
+            i === 1
+              ? newX * 0.8 + Math.random() * 20
+              : newX * -0.5 + 80 + Math.random() * 15;
+          y.push(newY);
+
+          // Keep sliding window
+          if (y.length > MAX_POINTS) {
+            y.shift();
+          }
+
+          newData[i] = y;
+        }
+
+        // Keep sliding window for x
+        if (x.length > MAX_POINTS) {
+          x.shift();
+        }
+        newData[0] = x;
+
+        break;
+      }
+    }
+
+    return newData;
+  };
+
+  // Real-time data update function
+  const updateChartsData = useCallback(() => {
+    setLineData((prev) => generateNewDataPoint(prev, "line"));
+    setAreaData((prev) => generateNewDataPoint(prev, "area"));
+    setBarData((prev) => generateNewDataPoint(prev, "bar"));
+    setScatterData((prev) => generateNewDataPoint(prev, "scatter"));
+    timeRef.current += 1;
+  }, []);
+
+  // Toggle real-time updates
+  const toggleRealTime = useCallback(() => {
+    setIsRealTimeEnabled((prev) => !prev);
+  }, []);
+
+  // Start real-time updates
+  useEffect(() => {
+    if (isRealTimeEnabled) {
+      intervalRef.current = setInterval(updateChartsData, 100); // Update every 2 seconds
+    } else {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+    }
+
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+    };
+  }, [updateChartsData, isRealTimeEnabled]);
 
   const themeOptions = Object.keys(PREDEFINED_THEMES) as ThemeName[];
 
@@ -167,6 +325,22 @@ export default function Dashboard() {
 
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-2">
+                <Button
+                  variant={isRealTimeEnabled ? "default" : "outline"}
+                  size="sm"
+                  onClick={toggleRealTime}
+                  className="w-36"
+                >
+                  {isRealTimeEnabled ? "Pause" : "Start"}
+                </Button>
+                <span className="text-sm text-muted-foreground">
+                  Updates every 2s
+                </span>
+              </div>
+
+              <Separator orientation="vertical" className="h-6" />
+
+              <div className="flex items-center gap-2">
                 <label htmlFor="theme-select" className="text-sm font-medium">
                   Chart Theme:
                 </label>
@@ -216,7 +390,7 @@ export default function Dashboard() {
           isResizable={true}
           compactType="vertical"
           preventCollision={false}
-          resizeHandles={['se', 'sw', 'ne', 'nw']}
+          resizeHandles={["se", "sw", "ne", "nw"]}
           style={{
             minHeight: "1200px",
           }}
@@ -235,9 +409,7 @@ export default function Dashboard() {
                   </p>
                 </CardHeader>
                 <CardContent className="flex-1 p-2 min-h-0">
-                  <div className="h-full w-full">
-                    {item.chart}
-                  </div>
+                  <div className="h-full w-full">{item.chart}</div>
                 </CardContent>
               </Card>
             </div>
@@ -281,7 +453,8 @@ export default function Dashboard() {
           height: 20px;
           bottom: 0;
           right: 0;
-          background: url("data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNiIgaGVpZ2h0PSI2IiB2aWV3Qm94PSIwIDAgNiA2IiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8ZG90cyBmaWxsPSIjODg4IiBkPSJNIDYsNiBMIDQsNiBMIDQsNCBMIDYsNCBMIDYsNiBaIE0gNiwyIEwgNCwyIEwgNCwwIEwgNiwwIEwgNiwyIFoiLz4KPHN2Zz4K") no-repeat;
+          background: url("data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNiIgaGVpZ2h0PSI2IiB2aWV3Qm94PSIwIDAgNiA2IiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8ZG90cyBmaWxsPSIjODg4IiBkPSJNIDYsNiBMIDQsNiBMIDQsNCBMIDYsNCBMIDYsNiBaIE0gNiwyIEwgNCwyIEwgNCwwIEwgNiwwIEwgNiwyIFoiLz4KPHN2Zz4K")
+            no-repeat;
           background-origin: content-box;
           box-sizing: border-box;
           cursor: se-resize;
@@ -295,7 +468,8 @@ export default function Dashboard() {
           height: 20px;
           bottom: 0;
           left: 0;
-          background: url("data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNiIgaGVpZ2h0PSI2IiB2aWV3Qm94PSIwIDAgNiA2IiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8ZG90cyBmaWxsPSIjODg4IiBkPSJNIDAsNiBMIDIsNiBMIDIsNCBMIDAsNCBMIDAsNiBaIE0gMCwyIEwgMiwyIEwgMiwwIEwgMCwwIEwgMCwyIFoiLz4KPHN2Zz4K") no-repeat;
+          background: url("data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNiIgaGVpZ2h0PSI2IiB2aWV3Qm94PSIwIDAgNiA2IiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8ZG90cyBmaWxsPSIjODg4IiBkPSJNIDAsNiBMIDIsNiBMIDIsNCBMIDAsNCBMIDAsNiBaIE0gMCwyIEwgMiwyIEwgMiwwIEwgMCwwIEwgMCwyIFoiLz4KPHN2Zz4K")
+            no-repeat;
           background-origin: content-box;
           box-sizing: border-box;
           cursor: sw-resize;
@@ -309,7 +483,8 @@ export default function Dashboard() {
           height: 20px;
           top: 0;
           right: 0;
-          background: url("data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNiIgaGVpZ2h0PSI2IiB2aWV3Qm94PSIwIDAgNiA2IiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8ZG90cyBmaWxsPSIjODg4IiBkPSJNIDYsMCBMIDQsMCBMIDQsMiBMIDYsMiBMIDYsMCBaIE0gNiw0IEwgNCw0IEwgNCw2IEwgNiw2IEwgNiw0IFoiLz4KPHN2Zz4K") no-repeat;
+          background: url("data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNiIgaGVpZ2h0PSI2IiB2aWV3Qm94PSIwIDAgNiA2IiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8ZG90cyBmaWxsPSIjODg4IiBkPSJNIDYsMCBMIDQsMCBMIDQsMiBMIDYsMiBMIDYsMCBaIE0gNiw0IEwgNCw0IEwgNCw2IEwgNiw2IEwgNiw0IFoiLz4KPHN2Zz4K")
+            no-repeat;
           background-origin: content-box;
           box-sizing: border-box;
           cursor: ne-resize;
@@ -323,7 +498,8 @@ export default function Dashboard() {
           height: 20px;
           top: 0;
           left: 0;
-          background: url("data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNiIgaGVpZ2h0PSI2IiB2aWV3Qm94PSIwIDAgNiA2IiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8ZG90cyBmaWxsPSIjODg4IiBkPSJNIDAsMCBMIDIsMCBMIDIsMiBMIDAsMiBMIDAsMCBaIE0gMCw0IEwgMiw0IEwgMiw2IEwgMCw2IEwgMCw0IFoiLz4KPHN2Zz4K") no-repeat;
+          background: url("data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNiIgaGVpZ2h0PSI2IiB2aWV3Qm94PSIwIDAgNiA2IiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8ZG90cyBmaWxsPSIjODg4IiBkPSJNIDAsMCBMIDIsMCBMIDIsMiBMIDAsMiBMIDAsMCBaIE0gMCw0IEwgMiw0IEwgMiw2IEwgMCw2IEwgMCw0IFoiLz4KPHN2Zz4K")
+            no-repeat;
           background-origin: content-box;
           box-sizing: border-box;
           cursor: nw-resize;
