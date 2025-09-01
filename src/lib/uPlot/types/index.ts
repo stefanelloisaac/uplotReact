@@ -4,7 +4,9 @@ import uPlot from "uplot";
 export interface ChartTheme {
   gridColor: string;
   axisColor: string;
+  tickColor?: string;
   backgroundColor?: string;
+  colors?: string[];
 }
 
 export interface ChartDimensions {

@@ -12,6 +12,7 @@ export class ChartAccessibility {
   private chart: uPlot;
   private options: AccessibilityOptions;
   private ariaLiveRegion?: HTMLElement;
+  private styleElement?: HTMLStyleElement;
 
   constructor(chart: uPlot, options: AccessibilityOptions = {}) {
     this.chart = chart;
@@ -96,14 +97,18 @@ export class ChartAccessibility {
       }
     });
 
-    const style = document.createElement("style");
-    style.textContent = `
-      .uplot:focus {
-        outline: 2px solid #3b82f6;
-        outline-offset: 2px;
-      }
-    `;
-    document.head.appendChild(style);
+    // Only add style if it doesn't already exist
+    if (!document.getElementById('uplot-accessibility-styles')) {
+      this.styleElement = document.createElement("style");
+      this.styleElement.id = 'uplot-accessibility-styles';
+      this.styleElement.textContent = `
+        .uplot:focus {
+          outline: 2px solid #3b82f6;
+          outline-offset: 2px;
+        }
+      `;
+      document.head.appendChild(this.styleElement);
+    }
   }
 
   private setupLiveRegion(): void {
@@ -184,8 +189,15 @@ export class ChartAccessibility {
   }
 
   destroy(): void {
-    if (this.ariaLiveRegion) {
-      document.body.removeChild(this.ariaLiveRegion);
+    if (this.ariaLiveRegion && this.ariaLiveRegion.parentNode) {
+      this.ariaLiveRegion.parentNode.removeChild(this.ariaLiveRegion);
+      this.ariaLiveRegion = undefined;
+    }
+    
+    // Only remove style element if we created it and it's the only one
+    if (this.styleElement && this.styleElement.parentNode) {
+      this.styleElement.parentNode.removeChild(this.styleElement);
+      this.styleElement = undefined;
     }
   }
 }

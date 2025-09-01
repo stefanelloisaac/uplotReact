@@ -5,18 +5,12 @@
 import React, { lazy } from "react";
 import { StyledChartProps } from "../types";
 
-export const LazyLineChart = lazy(
-  () => import("../../../components/LineChart")
+// Lazy load the main Chart component
+export const LazyChart = lazy(
+  () => import("../../../components/ui/Chart")
 );
-export const LazyAreaChart = lazy(
-  () => import("../../../components/AreaChart")
-);
-export const LazyScatterChart = lazy(
-  () => import("../../../components/ScatterChart")
-);
-export const LazyBarChart = lazy(() => import("../../../components/BarChart"));
 
-export type ChartType = "line" | "area" | "scatter" | "bar";
+export type ChartType = "line" | "area" | "scatter" | "bar" | "pie";
 
 interface ChartTypeConfig {
   component: React.LazyExoticComponent<any>;
@@ -26,24 +20,29 @@ interface ChartTypeConfig {
 
 export const CHART_TYPES: Record<ChartType, ChartTypeConfig> = {
   line: {
-    component: LazyLineChart,
-    preload: () => import("../../../components/LineChart"),
+    component: LazyChart,
+    preload: () => import("../../../components/ui/Chart"),
     size: 8,
   },
   area: {
-    component: LazyAreaChart,
-    preload: () => import("../../../components/AreaChart"),
+    component: LazyChart,
+    preload: () => import("../../../components/ui/Chart"),
     size: 12,
   },
   scatter: {
-    component: LazyScatterChart,
-    preload: () => import("../../../components/ScatterChart"),
+    component: LazyChart,
+    preload: () => import("../../../components/ui/Chart"),
     size: 15,
   },
   bar: {
-    component: LazyBarChart,
-    preload: () => import("../../../components/BarChart"),
+    component: LazyChart,
+    preload: () => import("../../../components/ui/Chart"),
     size: 20,
+  },
+  pie: {
+    component: LazyChart,
+    preload: () => import("../../../components/ui/Chart"),
+    size: 25,
   },
 };
 

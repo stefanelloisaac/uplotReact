@@ -80,31 +80,6 @@ const StyledChart: React.FC<StyledChartProps> = ({
       ...options,
       width: Math.max(finalWidth, responsiveConfig.minWidth!),
       height: finalHeight,
-      axes: options.axes?.map((axis) => ({
-        ...axis,
-        stroke: mergedTheme.axisColor,
-        grid: {
-          stroke: mergedTheme.gridColor,
-          width: 1,
-          ...axis?.grid,
-        },
-        ticks: {
-          stroke: mergedTheme.axisColor,
-          width: 1,
-          ...axis?.ticks,
-        },
-      })) || [
-        {
-          stroke: mergedTheme.axisColor,
-          grid: { stroke: mergedTheme.gridColor, width: 1 },
-          ticks: { stroke: mergedTheme.axisColor, width: 1 },
-        },
-        {
-          stroke: mergedTheme.axisColor,
-          grid: { stroke: mergedTheme.gridColor, width: 1 },
-          ticks: { stroke: mergedTheme.axisColor, width: 1 },
-        },
-      ],
     };
   }, [options, dimensions, mergedTheme, responsiveConfig]);
 
