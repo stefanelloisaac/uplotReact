@@ -185,7 +185,7 @@ export default function Dashboard() {
   // Start real-time updates
   useEffect(() => {
     if (isRealTimeEnabled) {
-      intervalRef.current = setInterval(updateChartsData, 10); // Update every 2 seconds
+      intervalRef.current = setInterval(updateChartsData, 500); // Update every 500 ms
     } else {
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
