@@ -18,14 +18,14 @@ export const LoadingFallback: React.FC<LoadingFallbackProps> = ({
       case "theme":
         return (
           <div className="text-center">
-            <div className="relative mx-auto mb-3">
-              <div className="w-8 h-8 border-3 border-muted/30 rounded-full"></div>
-              <div className="absolute inset-0 w-8 h-8 border-3 border-primary border-t-transparent rounded-full animate-spin"></div>
+            <div className="relative mx-auto mb-4 w-8 h-8">
+              <div className="absolute inset-0 w-8 h-8 border-2 border-muted/20 rounded-full"></div>
+              <div className="absolute inset-0 w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin duration-700 ease-linear"></div>
             </div>
-            <div className="text-muted-foreground text-sm font-medium">
+            <div className="text-muted-foreground text-sm font-medium animate-pulse">
               {message || "Applying theme..."}
             </div>
-            <div className="text-muted-foreground/70 text-xs mt-1">
+            <div className="text-muted-foreground/70 text-xs mt-2 animate-pulse" style={{ animationDelay: "200ms" }}>
               Updating chart colors
             </div>
           </div>
@@ -34,32 +34,52 @@ export const LoadingFallback: React.FC<LoadingFallbackProps> = ({
       case "data":
         return (
           <div className="text-center">
-            <div className="flex items-center justify-center space-x-1 mb-3">
+            <div className="flex items-end justify-center space-x-1 mb-4 h-8">
               <div
-                className="w-1.5 h-6 bg-primary rounded-sm animate-pulse"
-                style={{ animationDelay: "0ms" }}
+                className="w-1.5 bg-primary rounded-sm transition-all duration-1000 ease-in-out"
+                style={{ 
+                  height: "1.5rem",
+                  animation: "pulse 1.4s ease-in-out infinite",
+                  animationDelay: "0ms"
+                }}
               ></div>
               <div
-                className="w-1.5 h-4 bg-primary/70 rounded-sm animate-pulse"
-                style={{ animationDelay: "150ms" }}
+                className="w-1.5 bg-primary/80 rounded-sm transition-all duration-1000 ease-in-out"
+                style={{ 
+                  height: "1rem",
+                  animation: "pulse 1.4s ease-in-out infinite",
+                  animationDelay: "200ms"
+                }}
               ></div>
               <div
-                className="w-1.5 h-8 bg-primary rounded-sm animate-pulse"
-                style={{ animationDelay: "300ms" }}
+                className="w-1.5 bg-primary rounded-sm transition-all duration-1000 ease-in-out"
+                style={{ 
+                  height: "2rem",
+                  animation: "pulse 1.4s ease-in-out infinite",
+                  animationDelay: "400ms"
+                }}
               ></div>
               <div
-                className="w-1.5 h-3 bg-primary/70 rounded-sm animate-pulse"
-                style={{ animationDelay: "450ms" }}
+                className="w-1.5 bg-primary/80 rounded-sm transition-all duration-1000 ease-in-out"
+                style={{ 
+                  height: "0.75rem",
+                  animation: "pulse 1.4s ease-in-out infinite",
+                  animationDelay: "600ms"
+                }}
               ></div>
               <div
-                className="w-1.5 h-5 bg-primary rounded-sm animate-pulse"
-                style={{ animationDelay: "600ms" }}
+                className="w-1.5 bg-primary rounded-sm transition-all duration-1000 ease-in-out"
+                style={{ 
+                  height: "1.25rem",
+                  animation: "pulse 1.4s ease-in-out infinite",
+                  animationDelay: "800ms"
+                }}
               ></div>
             </div>
-            <div className="text-muted-foreground text-sm font-medium">
+            <div className="text-muted-foreground text-sm font-medium animate-pulse">
               {message || "Processing data..."}
             </div>
-            <div className="text-muted-foreground/70 text-xs mt-1">
+            <div className="text-muted-foreground/70 text-xs mt-2 animate-pulse" style={{ animationDelay: "300ms" }}>
               Preparing visualization
             </div>
           </div>
@@ -68,11 +88,11 @@ export const LoadingFallback: React.FC<LoadingFallbackProps> = ({
       default:
         return (
           <div className="text-center">
-            <div className="relative mx-auto mb-3 w-6 h-6">
-              <div className="absolute inset-0 rounded-full border-2 border-primary/30"></div>
-              <div className="absolute inset-0 rounded-full border-2 border-primary border-t-transparent animate-spin"></div>
+            <div className="relative mx-auto mb-4 w-8 h-8">
+              <div className="absolute inset-0 rounded-full border-2 border-primary/20"></div>
+              <div className="absolute inset-0 rounded-full border-2 border-primary border-t-transparent animate-spin duration-700 ease-linear"></div>
             </div>
-            <div className="text-muted-foreground text-sm font-medium">
+            <div className="text-muted-foreground text-sm font-medium animate-pulse">
               {message}
             </div>
           </div>
@@ -82,9 +102,11 @@ export const LoadingFallback: React.FC<LoadingFallbackProps> = ({
 
   return (
     <div
-      className={`flex items-center justify-center bg-card/50 backdrop-blur-sm rounded-lg border border-border/50 ${className}`}
+      className={`flex items-center justify-center bg-card/30 backdrop-blur-sm rounded-lg border border-border/30 transition-all duration-200 ease-out ${className}`}
     >
-      {getLoaderContent()}
+      <div className="p-6">
+        {getLoaderContent()}
+      </div>
     </div>
   );
 };
@@ -106,11 +128,11 @@ export const LoadingOverlay: React.FC<LoadingOverlayProps> = ({
       case "theme":
         return (
           <div className="text-center">
-            <div className="relative mx-auto mb-2">
-              <div className="w-8 h-8 border-3 border-background/30 rounded-full"></div>
-              <div className="absolute inset-0 w-8 h-8 border-3 border-foreground border-t-transparent rounded-full animate-spin"></div>
+            <div className="relative mx-auto mb-3 w-8 h-8">
+              <div className="absolute inset-0 w-8 h-8 border-2 border-background/20 rounded-full"></div>
+              <div className="absolute inset-0 w-8 h-8 border-2 border-foreground border-t-transparent rounded-full animate-spin duration-700 ease-linear"></div>
             </div>
-            <div className="text-foreground text-sm font-medium drop-shadow-sm">
+            <div className="text-foreground text-sm font-medium drop-shadow-sm animate-pulse">
               {message || "Applying theme..."}
             </div>
           </div>
@@ -119,29 +141,49 @@ export const LoadingOverlay: React.FC<LoadingOverlayProps> = ({
       case "data":
         return (
           <div className="text-center">
-            <div className="flex items-center justify-center space-x-1 mb-2">
+            <div className="flex items-end justify-center space-x-1 mb-3 h-8">
               <div
-                className="w-1.5 h-6 bg-foreground/80 rounded-sm animate-pulse drop-shadow-sm"
-                style={{ animationDelay: "0ms" }}
+                className="w-1.5 bg-foreground/80 rounded-sm drop-shadow-sm transition-all duration-1000 ease-in-out"
+                style={{ 
+                  height: "1.5rem",
+                  animation: "pulse 1.4s ease-in-out infinite",
+                  animationDelay: "0ms"
+                }}
               ></div>
               <div
-                className="w-1.5 h-4 bg-foreground/60 rounded-sm animate-pulse drop-shadow-sm"
-                style={{ animationDelay: "150ms" }}
+                className="w-1.5 bg-foreground/60 rounded-sm drop-shadow-sm transition-all duration-1000 ease-in-out"
+                style={{ 
+                  height: "1rem",
+                  animation: "pulse 1.4s ease-in-out infinite",
+                  animationDelay: "200ms"
+                }}
               ></div>
               <div
-                className="w-1.5 h-8 bg-foreground/80 rounded-sm animate-pulse drop-shadow-sm"
-                style={{ animationDelay: "300ms" }}
+                className="w-1.5 bg-foreground/80 rounded-sm drop-shadow-sm transition-all duration-1000 ease-in-out"
+                style={{ 
+                  height: "2rem",
+                  animation: "pulse 1.4s ease-in-out infinite",
+                  animationDelay: "400ms"
+                }}
               ></div>
               <div
-                className="w-1.5 h-3 bg-foreground/60 rounded-sm animate-pulse drop-shadow-sm"
-                style={{ animationDelay: "450ms" }}
+                className="w-1.5 bg-foreground/60 rounded-sm drop-shadow-sm transition-all duration-1000 ease-in-out"
+                style={{ 
+                  height: "0.75rem",
+                  animation: "pulse 1.4s ease-in-out infinite",
+                  animationDelay: "600ms"
+                }}
               ></div>
               <div
-                className="w-1.5 h-5 bg-foreground/80 rounded-sm animate-pulse drop-shadow-sm"
-                style={{ animationDelay: "600ms" }}
+                className="w-1.5 bg-foreground/80 rounded-sm drop-shadow-sm transition-all duration-1000 ease-in-out"
+                style={{ 
+                  height: "1.25rem",
+                  animation: "pulse 1.4s ease-in-out infinite",
+                  animationDelay: "800ms"
+                }}
               ></div>
             </div>
-            <div className="text-foreground text-sm font-medium drop-shadow-sm">
+            <div className="text-foreground text-sm font-medium drop-shadow-sm animate-pulse">
               {message || "Processing data..."}
             </div>
           </div>
@@ -150,11 +192,11 @@ export const LoadingOverlay: React.FC<LoadingOverlayProps> = ({
       default:
         return (
           <div className="text-center">
-            <div className="relative mx-auto mb-2 w-6 h-6">
-              <div className="absolute inset-0 rounded-full border-2 border-background/30"></div>
-              <div className="absolute inset-0 rounded-full border-2 border-foreground border-t-transparent animate-spin"></div>
+            <div className="relative mx-auto mb-3 w-8 h-8">
+              <div className="absolute inset-0 rounded-full border-2 border-background/20"></div>
+              <div className="absolute inset-0 rounded-full border-2 border-foreground border-t-transparent animate-spin duration-700 ease-linear"></div>
             </div>
-            <div className="text-foreground text-sm font-medium drop-shadow-sm">
+            <div className="text-foreground text-sm font-medium drop-shadow-sm animate-pulse">
               {message}
             </div>
           </div>
@@ -164,9 +206,11 @@ export const LoadingOverlay: React.FC<LoadingOverlayProps> = ({
 
   return (
     <div
-      className={`absolute inset-0 flex items-center justify-center bg-background/80 backdrop-blur-sm rounded-lg z-10 transition-all duration-200 ease-in-out ${className}`}
+      className={`absolute inset-0 flex items-center justify-center bg-background/85 backdrop-blur-sm rounded-lg z-10 transition-all duration-300 ease-out ${className}`}
     >
-      {getLoaderContent()}
+      <div className="p-4">
+        {getLoaderContent()}
+      </div>
     </div>
   );
 };
